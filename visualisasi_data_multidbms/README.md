@@ -117,3 +117,70 @@ visualisasi_data_multidbms/
 - Kategori produk dibuat dengan pencocokan kata kunci sederhana.
 - Sebelum mengumpulkan, buka URL publik di jendela incognito dan pastikan dashboard benar-benar dapat diakses.
 - Lengkapi identitas (nama/NIM) dan tautan live app, GitHub, dataset, dan referensi kode pada form LMS sesuai instruksi dosen.
+
+
+
+## Arsitektur Sistem
+
+Proyek ini mengintegrasikan dua DBMS menggunakan Python untuk mendukung analisis data transaksi ritel.
+
+### 1. Database yang Digunakan
+
+- **DBMS 1 — SQLite:** Menggunakan engine SQLite melalui SQLAlchemy. Menyimpan data produk pada tabel `products`, termasuk kode produk, deskripsi, dan kategori.
+- **DBMS 2 — PostgreSQL:** Menggunakan engine PostgreSQL melalui SQLAlchemy. Database di-host menggunakan Neon dan menyimpan data transaksi pada tabel `transactions`.
+
+### 2. Diagram Arsitektur
+
+```text
+Data Produk
+    |
+    v
+SQLite (products.db)
+    |
+    |                     Data Transaksi
+    |                          |
+    |                          v
+    |                 PostgreSQL (Neon)
+    |                          |
+    +------------+-------------+
+                 |
+                 v
+          Python + SQLAlchemy
+                 |
+                 v
+              Pandas
+    Membaca dan menggabungkan data
+       berdasarkan kode produk
+                 |
+                 v
+        Streamlit + Plotly
+                 |
+                 v
+       Dashboard Visualisasi Web
+```
+
+### 3. Alur Data Pipeline
+
+1. Python membuat koneksi ke SQLite dan PostgreSQL menggunakan SQLAlchemy.
+2. Data produk dibaca dari tabel `products` di SQLite.
+3. Data transaksi dibaca dari tabel `transactions` di PostgreSQL.
+4. Pandas mengolah data dan menggabungkan transaksi dengan informasi produk berdasarkan `stock_code`.
+5. Data hasil integrasi digunakan untuk menghitung ringkasan dan membuat visualisasi.
+6. Streamlit menampilkan dashboard dan Plotly menyajikan grafik interaktif.
+
+### 4. Fitur Dashboard
+
+- Ringkasan data transaksi.
+- Grafik visualisasi transaksi dan penjualan.
+- Filter interaktif untuk mengeksplorasi data.
+- Penggabungan data produk dan transaksi dari dua DBMS.
+- Dashboard web yang dapat diakses secara publik.
+
+### 5. Teknologi
+
+Python, SQLite, PostgreSQL, Neon, SQLAlchemy,
+Pandas, Streamlit, dan Plotly.
+
+### 6. Validasi Database
+
+Tabel `transactions` pada PostgreSQL telah diperiksa menggunakan query `COUNT(*)` dan menghasilkan 50 baris data pada saat verifikasi.
