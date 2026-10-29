@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from sqlalchemy import text
-
+from pathlib import Path
 def get_database_url():
     try:
         if "postgres" in __import__("streamlit").secrets:
@@ -62,7 +62,7 @@ def load_joined_data(pg_engine, sqlite_engine, demo=False):
         transactions = pd.read_sql("SELECT invoice_no, stock_code, quantity, invoice_date, unit_price, customer_id, country FROM transactions", pg_engine)
     else:
         # Demo mode is intentionally local and is not a substitute for the required PostgreSQL deployment.
-        demo_path = "data/sample_transactions.csv"
+        demo_path = Path(__file__).resolve().parent / "data" / "sample_transactions.csv"
         transactions = pd.read_csv(demo_path, parse_dates=["invoice_date"])
         if "description" not in products.columns and "description" in transactions.columns:
             pass
